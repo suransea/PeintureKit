@@ -21,17 +21,19 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		OBJ_22 /* PeintureKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* PeintureKit.swift */; };
+		1BC4F6F7A100EE7574A8211F /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC4F06F4C3EEF8EF257DF2B /* Token.swift */; };
+		1BC4F86778E9D563911179C9 /* Lex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC4F27C4DB498B668F52DC6 /* Lex.swift */; };
+		OBJ_22 /* PBXBuildFile */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* PeintureKit.swift */; };
 		OBJ_29 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_40 /* PeintureKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* PeintureKitTests.swift */; };
-		OBJ_41 /* XCTestManifests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* XCTestManifests.swift */; };
 		OBJ_43 /* PeintureKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "PeintureKit::PeintureKit::Product" /* PeintureKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1BC4F0188315A9C4564812BF /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		1BC4F06F4C3EEF8EF257DF2B /* Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
+		1BC4F27C4DB498B668F52DC6 /* Lex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lex.swift; sourceTree = "<group>"; };
 		OBJ_12 /* PeintureKitTests.swift */ = {isa = PBXFileReference; path = PeintureKitTests.swift; sourceTree = "<group>"; };
-		OBJ_13 /* XCTestManifests.swift */ = {isa = PBXFileReference; path = XCTestManifests.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_9 /* PeintureKit.swift */ = {isa = PBXFileReference; path = PeintureKit.swift; sourceTree = "<group>"; };
 		"PeintureKit::PeintureKit::Product" /* PeintureKit.framework */ = {isa = PBXFileReference; path = PeintureKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -66,7 +68,6 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_12 /* PeintureKitTests.swift */,
-				OBJ_13 /* XCTestManifests.swift */,
 			);
 			name = PeintureKitTests;
 			path = Tests/PeintureKitTests;
@@ -107,6 +108,8 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_9 /* PeintureKit.swift */,
+				1BC4F06F4C3EEF8EF257DF2B /* Token.swift */,
+				1BC4F27C4DB498B668F52DC6 /* Lex.swift */,
 			);
 			name = PeintureKit;
 			path = Sources/PeintureKit;
@@ -188,7 +191,8 @@
 		OBJ_21 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
-				OBJ_22 /* PeintureKit.swift in Sources */,
+				1BC4F6F7A100EE7574A8211F /* Token.swift in Sources */,
+				1BC4F86778E9D563911179C9 /* Lex.swift in Sources */,
 			);
 		};
 		OBJ_28 /* Sources */ = {
@@ -201,7 +205,6 @@
 			isa = PBXSourcesBuildPhase;
 			files = (
 				OBJ_40 /* PeintureKitTests.swift in Sources */,
-				OBJ_41 /* XCTestManifests.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */

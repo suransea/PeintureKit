@@ -3,6 +3,7 @@
 /.build
 /Packages
 xcuserdata/
+/.swiftpm
 
 # IDEA
 *.iml
