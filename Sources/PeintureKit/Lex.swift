@@ -46,16 +46,16 @@ extension Character {
 }
 
 enum LexError: Error, CustomStringConvertible {
-    case unexpectedChar(Character, pos: Int)
-    case unterminated(String, beginPos: Int)
+    case unexpected(char: Character, at: Int)
+    case unterminated(chars: String, from: Int)
 
     var description: String {
         get {
             switch self {
-            case let .unexpectedChar(char, pos):
+            case let .unexpected(char, pos):
                 return "unexpected character \"\(char)\" at pos \(pos)"
-            case let .unterminated(string, pos):
-                return "expected the terminal \"\(string)\" from pos \(pos)"
+            case let .unterminated(chars, pos):
+                return "expected the terminal \"\(chars)\" from pos \(pos)"
             }
         }
     }
@@ -127,7 +127,7 @@ class Lexer {
         if ch == "-" {
             next()
             if !ch.isDecimal {
-                throw LexError.unexpectedChar(ch, pos: pos)
+                throw LexError.unexpected(char: ch, at: pos)
             }
         }
         next(when: { ch.isDecimal })
@@ -137,7 +137,7 @@ class Lexer {
 
         next() // consume "."
         if !ch.isDecimal {
-            throw LexError.unexpectedChar(ch, pos: pos)
+            throw LexError.unexpected(char: ch, at: pos)
         }
         next(when: { ch.isDecimal })
         return Token.literals(.value(.float(literals(from: begin))))
@@ -149,7 +149,7 @@ class Lexer {
         let begin = pos
         while ch != beginChar {
             if ch == "\n" {
-                throw LexError.unexpectedChar(ch, pos: pos)
+                throw LexError.unexpected(char: ch, at: pos)
             }
             if ch == "\\" && peek() == beginChar {
                 next()
@@ -157,7 +157,7 @@ class Lexer {
             next()
         }
         if ch == END {
-            throw LexError.unterminated(String(beginChar), beginPos: begin - 1)
+            throw LexError.unterminated(chars: String(beginChar), from: begin - 1)
         }
         let value = literals(from: begin)
         next() // consume terminal char
@@ -174,13 +174,13 @@ class Lexer {
         case "*":
             next(until: { ch == "*" && peek() == "/" })
             if ch == END {
-                throw LexError.unterminated("*/", beginPos: begin)
+                throw LexError.unterminated(chars: "*/", from: begin)
             }
             next() // consume "*"
             next() // consume "/"
             return Token.special(.comment(literals(from: begin)))
         default:
-            throw LexError.unexpectedChar(ch, pos: pos)
+            throw LexError.unexpected(char: ch, at: pos)
         }
     }
 
