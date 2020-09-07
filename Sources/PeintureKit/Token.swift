@@ -35,7 +35,7 @@ func !=(lhs: Token, rhs: Token) -> Bool {
     lhs.literals != rhs.literals
 }
 
-enum Symbol: String {
+enum Symbol: String, Token {
     case lparen = "("
     case rparen = ")"
     case lbrack = "["
@@ -46,27 +46,34 @@ enum Symbol: String {
     case comma = ","
 }
 
-enum Keyword: String {
+enum Keyword: String, Token {
     case `let`
 }
 
-enum Special {
+enum Special: Token {
     case end, illegal
     case comment(String)
 }
 
-enum Literals {
-    case ident(String)
+protocol Literals: Token {
 }
 
-enum Value {
+struct Ident: Literals {
+    let literals: String
+
+    init(literals: String) {
+        self.literals = literals
+    }
+}
+
+enum Value: Literals {
     case int(String)
     case float(String)
     case bool(String)
     case string(String)
 }
 
-extension Symbol: Token {
+extension Symbol {
     var literals: String {
         get {
             self.rawValue
@@ -74,7 +81,7 @@ extension Symbol: Token {
     }
 }
 
-extension Keyword: Token {
+extension Keyword {
     var literals: String {
         get {
             self.rawValue
@@ -82,7 +89,7 @@ extension Keyword: Token {
     }
 }
 
-extension Special: Token {
+extension Special {
     var literals: String {
         get {
             switch self {
@@ -97,18 +104,7 @@ extension Special: Token {
     }
 }
 
-extension Literals: Token {
-    var literals: String {
-        get {
-            switch self {
-            case .ident(let literals):
-                return literals
-            }
-        }
-    }
-}
-
-extension Value: Token {
+extension Value {
     var literals: String {
         get {
             switch self {

@@ -119,7 +119,7 @@ class Lexer {
         if "true" == value || "false" == value {
             return Value.bool(value)
         }
-        return Literals.ident(value)
+        return Ident(literals: value)
     }
 
     private func lexNumber() throws -> Token {
