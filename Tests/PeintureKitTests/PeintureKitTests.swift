@@ -12,11 +12,11 @@ final class PeintureKitTests: XCTestCase {
         repeat {
             token = try lexer.lex()
             tokens.append(token)
-        } while token != Token.special(.end) &&
-                token != Token.special(.illegal)
+        } while token != Special.end &&
+                token != Special.illegal
 
-        tokens.forEach { token in
-            print(token)
+        tokens.forEach {
+            print($0)
         }
     }
 }

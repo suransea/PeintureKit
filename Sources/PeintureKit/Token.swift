@@ -23,15 +23,16 @@
 
 import Foundation
 
-enum Token: Equatable {
-    case symbol(Symbol)
-    case keyword(Keyword)
-    case special(Special)
-    case literals(Literals)
+protocol Token {
+    var literals: String { get }
+}
 
-    static func ==(lhs: Token, rhs: Token) -> Bool {
-        lhs.literals == rhs.literals
-    }
+func ==(lhs: Token, rhs: Token) -> Bool {
+    lhs.literals == rhs.literals
+}
+
+func !=(lhs: Token, rhs: Token) -> Bool {
+    lhs.literals != rhs.literals
 }
 
 enum Symbol: String {
@@ -56,7 +57,6 @@ enum Special {
 
 enum Literals {
     case ident(String)
-    case value(Value)
 }
 
 enum Value {
@@ -66,24 +66,23 @@ enum Value {
     case string(String)
 }
 
-extension Token {
+extension Symbol: Token {
     var literals: String {
         get {
-            switch self {
-            case .keyword(let keyword):
-                return keyword.rawValue
-            case .special(let special):
-                return special.literals
-            case .symbol(let symbol):
-                return symbol.rawValue
-            case .literals(let literals):
-                return literals.literals
-            }
+            self.rawValue
         }
     }
 }
 
-extension Special {
+extension Keyword: Token {
+    var literals: String {
+        get {
+            self.rawValue
+        }
+    }
+}
+
+extension Special: Token {
     var literals: String {
         get {
             switch self {
@@ -98,20 +97,18 @@ extension Special {
     }
 }
 
-extension Literals {
+extension Literals: Token {
     var literals: String {
         get {
             switch self {
             case .ident(let literals):
                 return literals
-            case .value(let value):
-                return value.literals
             }
         }
     }
 }
 
-extension Value {
+extension Value: Token {
     var literals: String {
         get {
             switch self {
