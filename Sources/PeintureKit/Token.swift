@@ -23,7 +23,7 @@
 
 import Foundation
 
-protocol Token {
+public protocol Token {
     var literals: String { get }
 }
 
@@ -58,15 +58,11 @@ enum Special: Token {
 protocol Literals: Token {
 }
 
-struct Ident: Literals {
+struct IdentLit: Literals {
     let literals: String
-
-    init(literals: String) {
-        self.literals = literals
-    }
 }
 
-enum Value: Literals {
+enum ValueLit: Literals {
     case int(String)
     case float(String)
     case bool(String)
@@ -104,7 +100,7 @@ extension Special {
     }
 }
 
-extension Value {
+extension ValueLit {
     var literals: String {
         get {
             switch self {

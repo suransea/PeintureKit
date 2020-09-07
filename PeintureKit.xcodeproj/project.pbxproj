@@ -23,6 +23,8 @@
 /* Begin PBXBuildFile section */
 		1BC4F6F7A100EE7574A8211F /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC4F06F4C3EEF8EF257DF2B /* Token.swift */; };
 		1BC4F86778E9D563911179C9 /* Lex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC4F27C4DB498B668F52DC6 /* Lex.swift */; };
+		1BC4F927F21F729FEB993281 /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC4F03C7D4404ECDCE1D8B9 /* Node.swift */; };
+		1BC4FB4029B2953A217884E9 /* Parse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC4FD61202A42247BB60E08 /* Parse.swift */; };
 		OBJ_22 /* PBXBuildFile */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* PeintureKit.swift */; };
 		OBJ_29 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_40 /* PeintureKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* PeintureKitTests.swift */; };
@@ -31,8 +33,10 @@
 
 /* Begin PBXFileReference section */
 		1BC4F0188315A9C4564812BF /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		1BC4F03C7D4404ECDCE1D8B9 /* Node.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
 		1BC4F06F4C3EEF8EF257DF2B /* Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		1BC4F27C4DB498B668F52DC6 /* Lex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lex.swift; sourceTree = "<group>"; };
+		1BC4FD61202A42247BB60E08 /* Parse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parse.swift; sourceTree = "<group>"; };
 		OBJ_12 /* PeintureKitTests.swift */ = {isa = PBXFileReference; path = PeintureKitTests.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_9 /* PeintureKit.swift */ = {isa = PBXFileReference; path = PeintureKit.swift; sourceTree = "<group>"; };
@@ -110,6 +114,8 @@
 				OBJ_9 /* PeintureKit.swift */,
 				1BC4F06F4C3EEF8EF257DF2B /* Token.swift */,
 				1BC4F27C4DB498B668F52DC6 /* Lex.swift */,
+				1BC4FD61202A42247BB60E08 /* Parse.swift */,
+				1BC4F03C7D4404ECDCE1D8B9 /* Node.swift */,
 			);
 			name = PeintureKit;
 			path = Sources/PeintureKit;
@@ -193,6 +199,8 @@
 			files = (
 				1BC4F6F7A100EE7574A8211F /* Token.swift in Sources */,
 				1BC4F86778E9D563911179C9 /* Lex.swift in Sources */,
+				1BC4FB4029B2953A217884E9 /* Parse.swift in Sources */,
+				1BC4F927F21F729FEB993281 /* Node.swift in Sources */,
 			);
 		};
 		OBJ_28 /* Sources */ = {

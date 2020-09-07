@@ -19,6 +19,12 @@ final class PeintureKitTests: XCTestCase {
             print($0)
         }
     }
+
+    func testParse() throws {
+        let parser = try Parser(src: testVl)
+        let root = try parser.parse()
+        print(root)
+    }
 }
 
 let testVl = """

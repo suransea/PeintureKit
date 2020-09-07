@@ -45,17 +45,17 @@ extension Character {
     }
 }
 
-enum LexError: Error, CustomStringConvertible {
-    case unexpected(char: Character, at: Int)
-    case unterminated(chars: String, from: Int)
+public enum LexError: Error, CustomStringConvertible {
+    case unexpectedChar(Character, at: Int)
+    case unterminatedChars(String, from: Int)
 
-    var description: String {
+    public var description: String {
         get {
             switch self {
-            case let .unexpected(char, pos):
-                return "unexpected character \"\(char)\" at pos \(pos)"
-            case let .unterminated(chars, pos):
-                return "expected the terminal \"\(chars)\" from pos \(pos)"
+            case let .unexpectedChar(char, at):
+                return "unexpected character \"\(char)\" at pos \(at)"
+            case let .unterminatedChars(chars, from):
+                return "expected the terminal \"\(chars)\" from pos \(from)"
             }
         }
     }
@@ -117,9 +117,9 @@ class Lexer {
             return keyword
         }
         if "true" == value || "false" == value {
-            return Value.bool(value)
+            return ValueLit.bool(value)
         }
-        return Ident(literals: value)
+        return IdentLit(literals: value)
     }
 
     private func lexNumber() throws -> Token {
@@ -127,20 +127,20 @@ class Lexer {
         if ch == "-" {
             next()
             if !ch.isDecimal {
-                throw LexError.unexpected(char: ch, at: pos)
+                throw LexError.unexpectedChar(ch, at: pos)
             }
         }
         next(when: { ch.isDecimal })
         if ch != "." {
-            return Value.int(literals(from: begin))
+            return ValueLit.int(literals(from: begin))
         }
 
         next() // consume "."
         if !ch.isDecimal {
-            throw LexError.unexpected(char: ch, at: pos)
+            throw LexError.unexpectedChar(ch, at: pos)
         }
         next(when: { ch.isDecimal })
-        return Value.float(literals(from: begin))
+        return ValueLit.float(literals(from: begin))
     }
 
     private func lexString() throws -> Token {
@@ -149,7 +149,7 @@ class Lexer {
         let begin = pos
         while ch != beginChar {
             if ch == "\n" {
-                throw LexError.unexpected(char: ch, at: pos)
+                throw LexError.unexpectedChar(ch, at: pos)
             }
             if ch == "\\" && peek() == beginChar {
                 next()
@@ -157,11 +157,11 @@ class Lexer {
             next()
         }
         if ch == END {
-            throw LexError.unterminated(chars: String(beginChar), from: begin - 1)
+            throw LexError.unterminatedChars(String(beginChar), from: begin - 1)
         }
         let value = literals(from: begin)
         next() // consume terminal char
-        return Value.string(value)
+        return ValueLit.string(value)
     }
 
     private func lexComment() throws -> Token {
@@ -174,13 +174,13 @@ class Lexer {
         case "*":
             next(until: { ch == "*" && peek() == "/" })
             if ch == END {
-                throw LexError.unterminated(chars: "*/", from: begin)
+                throw LexError.unterminatedChars("*/", from: begin)
             }
             next() // consume "*"
             next() // consume "/"
             return Special.comment(literals(from: begin))
         default:
-            throw LexError.unexpected(char: ch, at: pos)
+            throw LexError.unexpectedChar(ch, at: pos)
         }
     }
 
