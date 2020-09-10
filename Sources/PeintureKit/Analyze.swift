@@ -149,6 +149,10 @@ class Analyzer {
                 result.textColor = try value.asString()
             case "textSize":
                 result.textSize = try value.asString()
+            case "textStyle":
+                result.textStyle = try value.asString()
+            case "textWeight":
+                result.textWeight = try value.asString()
             default:
                 break
             }

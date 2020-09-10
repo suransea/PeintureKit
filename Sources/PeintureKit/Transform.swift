@@ -46,16 +46,7 @@ func transformWidgetIntoView(widget: Widget, drawer: Drawer, views: inout [(Widg
         }
         result = view
     } else if let text = widget as? Text {
-        let view = UITextView()
-        view.isScrollEnabled = false
-        view.text = text.text
-        if !text.textColor.isEmpty {
-            view.textColor = UIColor(str: text.textColor)
-        }
-        if !text.textSize.isEmpty {
-            view.font = UIFont.systemFont(ofSize: CGFloat(str: text.textSize))
-        }
-        result = view
+        result = transformText(text: text)
     } else if let image = widget as? Image {
         let view = UIImageView()
         drawer.imageLoader(image.src, view)
@@ -68,6 +59,29 @@ func transformWidgetIntoView(widget: Widget, drawer: Drawer, views: inout [(Widg
         result.backgroundColor = UIColor(str: widget.color)
     }
     views.append((widget, result))
+    return result
+}
+
+func transformText(text: Text) -> UITextView {
+    let result = UITextView()
+    result.isScrollEnabled = false
+    result.text = text.text
+    if !text.textColor.isEmpty {
+        result.textColor = UIColor(str: text.textColor)
+    }
+    var textSize = UIFont.systemFontSize
+    if !text.textSize.isEmpty {
+        textSize = CGFloat(str: text.textSize)
+    }
+    let weight = UIFont.Weight(str: text.textWeight)
+    switch text.textStyle {
+    case "bold":
+        result.font = UIFont.boldSystemFont(ofSize: textSize)
+    case "italic":
+        result.font = UIFont.italicSystemFont(ofSize: textSize)
+    default:
+        result.font = UIFont.systemFont(ofSize: textSize, weight: weight)
+    }
     return result
 }
 
@@ -98,6 +112,33 @@ extension UIColor {
         let r = components[2]
         let a = components.count > 3 ? components[3] : 1
         self.init(red: r, green: g, blue: b, alpha: a)
+    }
+}
+
+extension UIFont.Weight {
+    init(str: String) {
+        switch str {
+        case "thin":
+            self = .thin
+        case "regular":
+            self = .regular
+        case "black":
+            self = .black
+        case "bold":
+            self = .bold
+        case "heavy":
+            self = .heavy
+        case "light":
+            self = .light
+        case "medium":
+            self = .medium
+        case "semibold":
+            self = .semibold
+        case "ultraLight":
+            self = .ultraLight
+        default:
+            self = .regular
+        }
     }
 }
 

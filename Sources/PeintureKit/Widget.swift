@@ -57,6 +57,8 @@ class Text: Widget {
     let text: String
     var textSize = empty
     var textColor = empty
+    var textStyle = empty
+    var textWeight = empty
 
     init(text: String = empty) {
         self.text = text

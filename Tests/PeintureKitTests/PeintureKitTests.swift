@@ -57,7 +57,7 @@ let testVl = """
                      src = 'https://w.wallhaven.cc/full/6k/wallhaven-6k3oox.jpg'
                      Constraint {
                          width = 'parent'
-                         height = 675
+                         heightToWidth = (2, 0, 0.5625)
                          topToBottom = (1, 100)
                      }
                  }
