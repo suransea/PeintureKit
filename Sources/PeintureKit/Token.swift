@@ -43,6 +43,8 @@ enum Symbol: String, Token {
     case lbrace = "{"
     case rbrace = "}"
     case assign = "="
+    case lequal = "<="
+    case gequal = ">="
     case comma = ","
 }
 

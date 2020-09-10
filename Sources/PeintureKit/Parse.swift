@@ -78,7 +78,7 @@ class Parser {
         while token != Symbol.rbrace {
             let ident: IdentLit = try expect()
             switch token {
-            case Symbol.assign:
+            case Symbol.assign, Symbol.lequal, Symbol.gequal:
                 props.append(try parseProp(name: ident))
             case Symbol.lparen, Symbol.lbrace:
                 decls.append(try parseDecl(type: ident))
@@ -100,8 +100,19 @@ class Parser {
     }
 
     private func parseProp(name: IdentLit) throws -> Prop {
-        try expect(token: Symbol.assign)
-        return Prop(name: name.literals, value: try parseRhs())
+        let relation: Relation
+        switch token {
+        case Symbol.assign:
+            relation = .equal
+        case Symbol.lequal:
+            relation = .lequal
+        case Symbol.gequal:
+            relation = .gequal
+        default:
+            throw ParseError.unexpectedToken(token, expected: Symbol.assign)
+        }
+        try next()
+        return Prop(name: name.literals, value: try parseRhs(), relation: relation)
     }
 
     private func parseRhs() throws -> Rhs {

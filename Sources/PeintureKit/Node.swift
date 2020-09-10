@@ -56,6 +56,11 @@ struct Decl: Node {
 struct Prop: Node {
     let name: String
     let value: Rhs
+    let relation: Relation
+}
+
+enum Relation {
+    case equal, lequal, gequal
 }
 
 struct Var: Node {

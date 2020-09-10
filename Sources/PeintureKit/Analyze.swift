@@ -177,10 +177,14 @@ class Analyzer {
             let value = prop.value
             let (first, second) = prop.name.twoComponents(separatedBy: "To")
             if second.isEmpty, let attr = ConstraintAttr(rawValue: first) {
-                result.append(Constraint(attr: attr, to: .unspecific, val: try value.asStringArray()))
+                result.append(
+                        Constraint(attr: attr, to: .unspecific, val: try value.asStringArray(), relation: prop.relation)
+                )
             } else if let attr = ConstraintAttr(rawValue: first),
                       let to = ConstraintAttr(rawValue: second.firstLetterLowercased) {
-                result.append(Constraint(attr: attr, to: to, val: try value.asStringArray()))
+                result.append(
+                        Constraint(attr: attr, to: to, val: try value.asStringArray(), relation: prop.relation)
+                )
             }
         }
         return result

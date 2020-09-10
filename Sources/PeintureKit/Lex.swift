@@ -102,6 +102,10 @@ class Lexer {
             return lex(to: Symbol.assign)
         case ",":
             return lex(to: Symbol.comma)
+        case "<":
+            return try lexBinary(equal: .lequal)
+        case ">":
+            return try lexBinary(equal: .gequal)
         case END:
             return lex(to: Special.end)
         default:
@@ -182,6 +186,15 @@ class Lexer {
         default:
             throw LexError.unexpectedChar(ch, at: pos)
         }
+    }
+
+    private func lexBinary(equal: Symbol) throws -> Token {
+        next()
+        if ch != "=" {
+            throw LexError.unexpectedChar(ch, at: pos)
+        }
+        next() // consume "="
+        return equal
     }
 
     private func lex(to token: Token) -> Token {

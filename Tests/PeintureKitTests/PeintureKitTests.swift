@@ -47,8 +47,8 @@ let testVl = """
                      textSize = 12
                      textColor = '#333333'
                      Constraint {
-                         widthToWidth = ('parent', 0, 0.8)
-                         height = 100
+                         width >= 200
+                         height <= 100
                          centerX = 'parent'
                          top = 200
                      }

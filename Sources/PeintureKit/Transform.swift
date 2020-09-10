@@ -75,6 +75,7 @@ func makeConstraint(_ views: [(Widget, UIView)]) {
         constraints.forEach { constraint in
             let attr = NSLayoutConstraint.Attribute(attr: constraint.attr)
             let to = NSLayoutConstraint.Attribute(attr: constraint.to)
+            let relation = NSLayoutConstraint.Relation(relation: constraint.relation)
             var toItem: UIView? = nil
             if constraint.val[0] == parent {
                 toItem = view.superview
@@ -83,9 +84,9 @@ func makeConstraint(_ views: [(Widget, UIView)]) {
             }
             let const = CGFloat(Float(constraint.val[1]) ?? 0)
             let multiplier = CGFloat(Float(constraint.val[2]) ?? 0)
-            let item = view.superview ?? view
-            item.addConstraint(NSLayoutConstraint(item: view, attribute: attr,
-                    relatedBy: .equal, toItem: toItem, attribute: to,
+            let target = view.superview ?? view
+            target.addConstraint(NSLayoutConstraint(item: view, attribute: attr,
+                    relatedBy: relation, toItem: toItem, attribute: to,
                     multiplier: multiplier, constant: const))
         }
     }
@@ -163,6 +164,19 @@ extension NSLayoutConstraint.Attribute {
             self = .lastBaseline
         case .firstBaseline:
             self = .firstBaseline
+        }
+    }
+}
+
+extension NSLayoutConstraint.Relation {
+    init(relation: Relation) {
+        switch relation {
+        case .equal:
+            self = .equal
+        case .lequal:
+            self = .lessThanOrEqual
+        case .gequal:
+            self = .greaterThanOrEqual
         }
     }
 }

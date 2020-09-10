@@ -36,6 +36,7 @@ struct Constraint {
     var attr: ConstraintAttr
     var to: ConstraintAttr
     var val: [String]
+    var relation: Relation
 }
 
 enum ConstraintAttr: String {
