@@ -64,6 +64,11 @@ extension Rhs {
         }
         throw AnalyzeError.mismatchedArgument("\(self)")
     }
+
+    func asBool() throws -> Bool {
+        let value = try self.asString()
+        return Bool(value) ?? false
+    }
 }
 
 extension String {
@@ -153,6 +158,10 @@ class Analyzer {
                 result.textStyle = try value.asString()
             case "textWeight":
                 result.textWeight = try value.asString()
+            case "underLine":
+                result.underLine = try value.asBool()
+            case "deleteLine":
+                result.deleteLine = try value.asBool()
             default:
                 break
             }

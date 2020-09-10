@@ -65,7 +65,15 @@ func transformWidgetIntoView(widget: Widget, drawer: Drawer, views: inout [(Widg
 func transformText(text: Text) -> UITextView {
     let result = UITextView()
     result.isScrollEnabled = false
-    result.text = text.text
+    var attr = [NSAttributedString.Key: Any]()
+    if text.underLine {
+        attr[NSAttributedString.Key.underlineStyle] = NSUnderlineStyle.single.rawValue
+    }
+    if text.deleteLine {
+        attr[NSAttributedString.Key.strikethroughStyle] = NSUnderlineStyle.single.rawValue
+    }
+    let attrText = NSMutableAttributedString(string: text.text, attributes: attr)
+    result.attributedText = attrText
     if !text.textColor.isEmpty {
         result.textColor = UIColor(str: text.textColor)
     }

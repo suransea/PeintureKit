@@ -59,6 +59,8 @@ class Text: Widget {
     var textColor = empty
     var textStyle = empty
     var textWeight = empty
+    var underLine = false
+    var deleteLine = false
 
     init(text: String = empty) {
         self.text = text
