@@ -25,37 +25,40 @@ final class PeintureKitTests: XCTestCase {
         let root = try parser.parse()
         print(root)
     }
+
+    func testAnalyze() throws {
+        let analyzer = try Analyzer(vl: testVl)
+        let widget = try analyzer.analyze()
+        print(widget)
+    }
+
+    func testDraw() throws {
+        let drawer = Drawer()
+        let image = try drawer.drawImage(vl: testVl)
+        print(image as Any)
+    }
 }
 
 let testVl = """
              // Use keyword "let" to declare a custom view
              let Custom = Composite {
                  Text('Hello') {
-                     width = 'wrap'
-                     height = 'wrap'
                      id = 1
-                     textSize = '12dp'
+                     textSize = 12
                      textColor = '#333333'
-                     Margin {
-                         top = '10dp'
-                     }
                      Constraint {
-                         ll = 'parent'
-                         rr = 'parent'
-                         tt = 'parent'
+                         widthToWidth = ('parent', 0, 0.8)
+                         height = 100
+                         centerX = 'parent'
+                         top = 200
                      }
                  }
                  Image {
-                     width = 'match'
-                     height = 'wrap'
                      src = 'https://w.wallhaven.cc/full/6k/wallhaven-6k3oox.jpg'
-                     Margin {
-                         top = '10dp'
-                     }
                      Constraint {
-                         ll = 'parent'
-                         rr = 'parent'
-                         tb = 1
+                         width = 'parent'
+                         height = 800
+                         topToBottom = 1
                      }
                  }
              }
@@ -64,19 +67,16 @@ let testVl = """
               * There can only be one top-level declaration
               */
              Composite {
-                 // size = '300dp'  // width = height = '300dp'
-                 width = '300dp'
-                 height = 'wrap'
                  Custom {
                      color = '#F6F6F6'
-                     width = 'match'
-                     height = 'wrap'
                      Constraint {
-                         ll = 'parent'
-                         rr = 'parent'
-                         tt = 'parent'
-                         bb = 'parent'
+                         width = 'parent'
+                         height = 'parent'
                      }
+                 }
+                 Constraint {
+                     width = 1200
+                     height = 1200
                  }
              }
              """

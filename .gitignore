@@ -8,3 +8,6 @@ xcuserdata/
 # IDEA
 *.iml
 /.idea
+
+# Pods
+/Pods

@@ -36,7 +36,7 @@ public enum ParseError: Error, CustomStringConvertible {
             case .unexpectedTokenType(let token, expectedType: let expectedType):
                 return "unexpected token type: \(type(of: token)), token: \(token), expected type: \(expectedType)"
             case .incorrectTopDeclarationCount(let count):
-                return "expected one top declaration, actual is \(count)"
+                return "expected one top declaration, actual count is \(count)"
             }
         }
     }
