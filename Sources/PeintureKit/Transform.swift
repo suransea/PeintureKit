@@ -51,6 +51,8 @@ func transformWidgetIntoView(widget: Widget, drawer: Drawer, views: inout [(Widg
         let view = UIImageView()
         drawer.imageLoader(image.src, view)
         result = view
+    } else if widget is Empty {
+        result = UIView()
     } else {
         throw TransformError.unknownWidget // reachable only while debugging
     }
