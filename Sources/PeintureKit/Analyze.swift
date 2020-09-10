@@ -187,6 +187,8 @@ class Analyzer {
                 widget.id = try value.asString()
             case "color":
                 widget.color = try value.asString()
+            case "contentMode":
+                widget.contentMode = try value.asString()
             default:
                 break
             }

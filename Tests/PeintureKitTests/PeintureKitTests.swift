@@ -54,6 +54,7 @@ let testVl = """
                  }
                  Image {
                      id = 2
+                     contentMode = 'scaleAspectFit'
                      src = 'https://w.wallhaven.cc/full/6k/wallhaven-6k3oox.jpg'
                      Constraint {
                          width = 'parent'

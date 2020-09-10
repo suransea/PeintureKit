@@ -58,6 +58,7 @@ func transformWidgetIntoView(widget: Widget, drawer: Drawer, views: inout [(Widg
     if !widget.color.isEmpty {
         result.backgroundColor = UIColor(str: widget.color)
     }
+    result.contentMode = UIView.ContentMode(str: widget.contentMode)
     views.append((widget, result))
     return result
 }
@@ -96,6 +97,41 @@ func transformText(text: Text) -> UITextView {
 extension CGFloat {
     init(str: String) {
         self.init(Float(str) ?? 0)
+    }
+}
+
+extension UIView.ContentMode {
+    init(str: String) {
+        switch str {
+        case "scaleToFill":
+            self = .scaleToFill
+        case "scaleAspectFit":
+            self = .scaleAspectFit
+        case "scaleAspectFill":
+            self = .scaleAspectFill
+        case "redraw":
+            self = .redraw
+        case "center":
+            self = .center
+        case "top":
+            self = .top
+        case "bottom":
+            self = .bottom
+        case "left":
+            self = .left
+        case "right":
+            self = .right
+        case "topLeft":
+            self = .topLeft
+        case "topRight ":
+            self = .topRight
+        case "bottomLeft ":
+            self = .bottomLeft
+        case "bottomRight ":
+            self = .bottomRight
+        default:
+            self = .scaleToFill
+        }
     }
 }
 

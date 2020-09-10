@@ -29,6 +29,7 @@ private let zero = "0"
 class Widget {
     var id = empty
     var color = empty
+    var contentMode = empty
     var constraints = [Constraint]()
 }
 
