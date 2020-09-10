@@ -29,27 +29,32 @@ enum TransformError: Error {
 
 extension Widget {
     func transformIntoView(with drawer: Drawer) throws -> UIView {
-        let view = try transformWidgetIntoView(widget: self, drawer: drawer)
-        makeConstraint([(self, view)])
+        var views = [(Widget, UIView)]()
+        let view = try transformWidgetIntoView(widget: self, drawer: drawer, views: &views)
+        makeConstraint(views: views)
         return view
     }
 }
 
-func transformWidgetIntoView(widget: Widget, drawer: Drawer) throws -> UIView {
+func transformWidgetIntoView(widget: Widget, drawer: Drawer, views: inout [(Widget, UIView)]) throws -> UIView {
     let result: UIView
     if let composite = widget as? Composite {
         let view = UIView()
-        var views = [(Widget, UIView)]()
         try composite.widgets.forEach { widget in
-            let subview = try transformWidgetIntoView(widget: widget, drawer: drawer)
-            views.append((widget, subview))
+            let subview = try transformWidgetIntoView(widget: widget, drawer: drawer, views: &views)
             view.addSubview(subview)
         }
-        makeConstraint(views)
         result = view
     } else if let text = widget as? Text {
         let view = UITextView()
+        view.isScrollEnabled = false
         view.text = text.text
+        if !text.textColor.isEmpty {
+            view.textColor = UIColor(str: text.textColor)
+        }
+        if !text.textSize.isEmpty {
+            view.font = UIFont.systemFont(ofSize: CGFloat(str: text.textSize))
+        }
         result = view
     } else if let image = widget as? Image {
         let view = UIImageView()
@@ -59,10 +64,44 @@ func transformWidgetIntoView(widget: Widget, drawer: Drawer) throws -> UIView {
         throw TransformError.unknownWidget // reachable only while debugging
     }
     result.translatesAutoresizingMaskIntoConstraints = false
+    if !widget.color.isEmpty {
+        result.backgroundColor = UIColor(str: widget.color)
+    }
+    views.append((widget, result))
     return result
 }
 
-func makeConstraint(_ views: [(Widget, UIView)]) {
+extension CGFloat {
+    init(str: String) {
+        self.init(Float(str) ?? 0)
+    }
+}
+
+extension UIColor {
+    convenience init(str: String) {
+        var chars = Array(str)
+        if str.starts(with: "#") {
+            chars.removeFirst()
+        } else if str.starts(with: "0x") || str.starts(with: "0X") {
+            chars.removeFirst(2)
+        }
+        var components = stride(from: 0, to: chars.count, by: 2).map { index in
+            String(chars[index..<index + 2])
+        }.map {
+            Int($0, radix: 16) ?? 0
+        }.map {
+            CGFloat(Float($0) / Float(255.0))
+        }
+        components.reverse()
+        let b = components[0]
+        let g = components[1]
+        let r = components[2]
+        let a = components.count > 3 ? components[3] : 1
+        self.init(red: r, green: g, blue: b, alpha: a)
+    }
+}
+
+func makeConstraint(views: [(Widget, UIView)]) {
     let viewDict: [String: UIView] = views.filter { widget, _ in
         !widget.id.isEmpty
     }.reduce(into: [:]) { result, element in
@@ -82,8 +121,8 @@ func makeConstraint(_ views: [(Widget, UIView)]) {
             } else if let some = viewDict[constraint.val[0]] {
                 toItem = some
             }
-            let const = CGFloat(Float(constraint.val[1]) ?? 0)
-            let multiplier = CGFloat(Float(constraint.val[2]) ?? 0)
+            let const = CGFloat(str: constraint.val[1])
+            let multiplier = CGFloat(str: constraint.val[2])
             let target = view.superview ?? view
             target.addConstraint(NSLayoutConstraint(item: view, attribute: attr,
                     relatedBy: relation, toItem: toItem, attribute: to,

@@ -55,6 +55,8 @@ class Composite: Widget {
 
 class Text: Widget {
     let text: String
+    var textSize = empty
+    var textColor = empty
 
     init(text: String = empty) {
         self.text = text

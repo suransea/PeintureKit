@@ -44,21 +44,21 @@ let testVl = """
              let Custom = Composite {
                  Text('Hello') {
                      id = 1
-                     textSize = 12
+                     color = '#00FFFFFF'
+                     textSize = 180
                      textColor = '#333333'
                      Constraint {
-                         width >= 200
-                         height <= 100
                          centerX = 'parent'
-                         top = 200
+                         top = 100
                      }
                  }
                  Image {
+                     id = 2
                      src = 'https://w.wallhaven.cc/full/6k/wallhaven-6k3oox.jpg'
                      Constraint {
                          width = 'parent'
-                         height = 800
-                         topToBottom = 1
+                         height = 675
+                         topToBottom = (1, 100)
                      }
                  }
              }
@@ -66,17 +66,11 @@ let testVl = """
              /*
               * There can only be one top-level declaration
               */
-             Composite {
-                 Custom {
-                     color = '#F6F6F6'
-                     Constraint {
-                         width = 'parent'
-                         height = 'parent'
-                     }
-                 }
+             Custom {
+                 color = '#F6F6F6'
                  Constraint {
                      width = 1200
-                     height = 1200
+                     bottomToBottom = 2
                  }
              }
              """

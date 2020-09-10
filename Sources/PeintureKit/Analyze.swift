@@ -142,6 +142,17 @@ class Analyzer {
             throw AnalyzeError.missingArgument("text")
         }
         let result = Text(text: try first.asString())
+        try decl.props.forEach { prop in
+            let value = prop.value
+            switch prop.name {
+            case "textColor":
+                result.textColor = try value.asString()
+            case "textSize":
+                result.textSize = try value.asString()
+            default:
+                break
+            }
+        }
         return result
     }
 
