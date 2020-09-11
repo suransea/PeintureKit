@@ -56,12 +56,16 @@ func transformWidgetIntoView(widget: Widget, drawer: Drawer, views: inout [(Widg
     } else {
         throw TransformError.unknownWidget // reachable only while debugging
     }
+    views.append((widget, result))
     result.translatesAutoresizingMaskIntoConstraints = false
+    result.contentMode = UIView.ContentMode(str: widget.contentMode)
     if !widget.color.isEmpty {
         result.backgroundColor = UIColor(str: widget.color)
     }
-    result.contentMode = UIView.ContentMode(str: widget.contentMode)
-    views.append((widget, result))
+    if !widget.cornerRadius.isEmpty {
+        result.layer.cornerRadius = CGFloat(str: widget.cornerRadius)
+        result.clipsToBounds = true
+    }
     return result
 }
 

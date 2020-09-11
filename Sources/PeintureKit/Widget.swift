@@ -31,6 +31,7 @@ class Widget {
     var color = empty
     var contentMode = empty
     var constraints = [Constraint]()
+    var cornerRadius = empty
 }
 
 struct Constraint {

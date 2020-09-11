@@ -189,6 +189,8 @@ class Analyzer {
                 widget.color = try value.asString()
             case "contentMode":
                 widget.contentMode = try value.asString()
+            case "cornerRadius":
+                widget.cornerRadius = try value.asString()
             default:
                 break
             }
