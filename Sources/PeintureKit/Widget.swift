@@ -31,6 +31,7 @@ class Widget {
     var color = empty
     var contentMode = empty
     var constraints = [Constraint]()
+    var transform: Transform?
     var cornerRadius = empty
 }
 
@@ -46,6 +47,14 @@ enum ConstraintAttr: String {
     case left, right, top, bottom, leading, trailing
     case width, height, centerX, centerY
     case firstBaseline, lastBaseline
+}
+
+struct Transform {
+    var pivot = ("0.5", "0.5")
+    var rotation = zero
+    var scale = ("1", "1")
+    var translation = (zero, zero)
+    var alpha = "1"
 }
 
 class Empty: Widget {

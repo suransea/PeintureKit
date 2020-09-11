@@ -65,6 +65,11 @@ extension Rhs {
         throw AnalyzeError.mismatchedArgument("\(self)")
     }
 
+    func asStringTupleTwo() throws -> (String, String) {
+        let array = try self.asStringArray()
+        return (array[0], array[1])
+    }
+
     func asBool() throws -> Bool {
         let value = try self.asString()
         return Bool(value) ?? false
@@ -83,6 +88,9 @@ extension String {
 
     var firstLetterLowercased: String {
         get {
+            if self.count == 0 {
+                return ""
+            }
             var chars = Array(self)
             chars[0] = Character(chars[0].lowercased())
             return String(chars)
@@ -196,6 +204,7 @@ class Analyzer {
             }
         }
         widget.constraints = try obtainConstraints(decl: decl)
+        widget.transform = try obtainTransform(decl: decl)
     }
 
     private func obtainConstraints(decl: Decl) throws -> [Constraint] {
@@ -204,15 +213,34 @@ class Analyzer {
         try constraint?.props.forEach { prop in
             let value = prop.value
             let (first, second) = prop.name.twoComponents(separatedBy: "To")
-            if second.isEmpty, let attr = ConstraintAttr(rawValue: first) {
-                result.append(
-                        Constraint(attr: attr, to: .unspecific, val: try value.asStringArray(), relation: prop.relation)
-                )
-            } else if let attr = ConstraintAttr(rawValue: first),
-                      let to = ConstraintAttr(rawValue: second.firstLetterLowercased) {
-                result.append(
-                        Constraint(attr: attr, to: to, val: try value.asStringArray(), relation: prop.relation)
-                )
+            if let attr = ConstraintAttr(rawValue: first) {
+                let to = ConstraintAttr(rawValue: second.firstLetterLowercased) ?? .unspecific
+                result.append(Constraint(attr: attr, to: to, val: try value.asStringArray(), relation: prop.relation))
+            }
+        }
+        return result
+    }
+
+    private func obtainTransform(decl: Decl) throws -> Transform? {
+        guard let transform = decl.decls.last(where: { $0.type == "Transform" }) else {
+            return nil
+        }
+        var result = Transform()
+        try transform.props.forEach { prop in
+            let value = prop.value
+            switch prop.name {
+            case "pivot":
+                result.pivot = try value.asStringTupleTwo()
+            case "translation":
+                result.translation = try value.asStringTupleTwo()
+            case "scale":
+                result.scale = try value.asStringTupleTwo()
+            case "rotation":
+                result.rotation = try value.asString()
+            case "alpha":
+                result.alpha = try value.asString()
+            default:
+                break
             }
         }
         return result

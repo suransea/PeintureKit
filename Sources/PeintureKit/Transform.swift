@@ -23,10 +23,6 @@
 
 import UIKit
 
-enum TransformError: Error {
-    case unknownWidget
-}
-
 extension Widget {
     func transformIntoView(with drawer: Drawer) throws -> UIView {
         var views = [(Widget, UIView)]()
@@ -54,7 +50,7 @@ func transformWidgetIntoView(widget: Widget, drawer: Drawer, views: inout [(Widg
     } else if widget is Empty {
         result = UIView()
     } else {
-        throw TransformError.unknownWidget // reachable only while debugging
+        fatalError("unknown widget") // reachable only while debugging
     }
     views.append((widget, result))
     result.translatesAutoresizingMaskIntoConstraints = false
@@ -65,6 +61,11 @@ func transformWidgetIntoView(widget: Widget, drawer: Drawer, views: inout [(Widg
     if !widget.cornerRadius.isEmpty {
         result.layer.cornerRadius = CGFloat(str: widget.cornerRadius)
         result.clipsToBounds = true
+    }
+    if let some = widget.transform {
+        result.layer.anchorPoint = CGPoint(x: CGFloat(str: some.pivot.0), y: CGFloat(str: some.pivot.1))
+        result.transform.apply(transform: some)
+        result.alpha = CGFloat(str: some.alpha)
     }
     return result
 }
@@ -189,6 +190,14 @@ extension UIFont.Weight {
         default:
             self = .regular
         }
+    }
+}
+
+extension CGAffineTransform {
+    mutating func apply(transform: Transform) {
+        self = self.rotated(by: CGFloat(Float.pi) * CGFloat(str: transform.rotation) / 180)
+                .scaledBy(x: CGFloat(str: transform.scale.0), y: CGFloat(str: transform.scale.1))
+                .translatedBy(x: CGFloat(str: transform.translation.0), y: CGFloat(str: transform.translation.1))
     }
 }
 
