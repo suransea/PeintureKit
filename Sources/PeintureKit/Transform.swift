@@ -27,7 +27,7 @@ extension Widget {
     func transformIntoView(with drawer: Drawer) throws -> UIView {
         var views = [(Widget, UIView)]()
         let view = try transformWidgetIntoView(widget: self, drawer: drawer, views: &views)
-        makeConstraint(views: views)
+        makeConstraints(for: views)
         return view
     }
 }
@@ -53,6 +53,7 @@ func transformWidgetIntoView(widget: Widget, drawer: Drawer, views: inout [(Widg
         fatalError("unknown widget") // reachable only while debugging
     }
     views.append((widget, result))
+    result.tag = Int(widget.id) ?? 0
     result.translatesAutoresizingMaskIntoConstraints = false
     result.contentMode = UIView.ContentMode(str: widget.contentMode)
     if !widget.color.isEmpty {
@@ -201,32 +202,71 @@ extension CGAffineTransform {
     }
 }
 
-func makeConstraint(views: [(Widget, UIView)]) {
-    let viewDict: [String: UIView] = views.filter { widget, _ in
-        !widget.id.isEmpty
-    }.reduce(into: [:]) { result, element in
-        result[element.0.id] = element.1
-    }
-    views.forEach { widget, view in
+func makeConstraints(for views: [(Widget, UIView)]) {
+    views.filter { widget, _ in
+        !widget.constraints.isEmpty
+    }.forEach { widget, view in
         let constraints = widget.constraints.map { constraint in
             constraint.standardised
         }
-        constraints.forEach { constraint in
-            let attr = NSLayoutConstraint.Attribute(attr: constraint.attr)
-            let to = NSLayoutConstraint.Attribute(attr: constraint.to)
-            let relation = NSLayoutConstraint.Relation(relation: constraint.relation)
-            var toItem: UIView? = nil
-            if constraint.val[0] == parent {
-                toItem = view.superview
-            } else if let some = viewDict[constraint.val[0]] {
-                toItem = some
+        linkConstraints(constraints, to: view, root: views.last!.1)
+    }
+}
+
+func linkConstraints(_ constraints: [Constraint], to item: UIView, root: UIView) {
+    constraints.forEach { constraint in
+        let superview = item.superview
+        let toItem: UIView?, target: UIView?
+        let toId = constraint.val[0]
+        if toId == parent {
+            (toItem, target) = (superview, superview)
+        } else {
+            let id = Int(toId) ?? -1
+            if id != -1 {
+                toItem = root.viewWithTag(id)
+                if toItem == nil {
+                    return  // ignore this constraint if toItem invalid
+                }
+                target = findCommonSuperview(item, toItem!)
+            } else {
+                (toItem, target) = (nil, item)
             }
-            let const = CGFloat(str: constraint.val[1])
-            let multiplier = CGFloat(str: constraint.val[2])
-            let target = view.superview ?? view
-            target.addConstraint(NSLayoutConstraint(item: view, attribute: attr,
-                    relatedBy: relation, toItem: toItem, attribute: to,
-                    multiplier: multiplier, constant: const))
+        }
+
+        if target == nil {
+            return
+        }
+
+        let attr = NSLayoutConstraint.Attribute(attr: constraint.attr)
+        let toAttr = NSLayoutConstraint.Attribute(attr: constraint.toAttr)
+        let relation = NSLayoutConstraint.Relation(relation: constraint.relation)
+        let const = CGFloat(str: constraint.val[1])
+        let multiplier = CGFloat(str: constraint.val[2])
+        target!.addConstraint(NSLayoutConstraint(item: item, attribute: attr,
+                relatedBy: relation, toItem: toItem, attribute: toAttr,
+                multiplier: multiplier, constant: const))
+    }
+}
+
+func findCommonSuperview(_ a: UIView, _ b: UIView) -> UIView? {
+    var visited = Set<UIView>()
+    var (x, y) = (Optional.some(a), Optional.some(b))
+    while true {
+        if let some = x {
+            if !visited.insert(some).inserted {
+                return some
+            }
+        }
+        if let some = y {
+            if !visited.insert(some).inserted {
+                return some
+            }
+        }
+        x = x?.superview
+        y = y?.superview
+
+        if x == nil && y == nil {
+            return nil
         }
     }
 }
@@ -245,7 +285,7 @@ extension Constraint {
 
     var isSingle: Bool {
         get {
-            self.to == .unspecific
+            self.toAttr == .unspecific
         }
     }
 
@@ -253,10 +293,10 @@ extension Constraint {
         get {
             var result = self
             if result.isSingle {
-                result.to = result.attr
+                result.toAttr = result.attr
                 if result.val[0] != parent {
                     if result.isDimension {
-                        result.to = .unspecific
+                        result.toAttr = .unspecific
                         result.val = [noId, result.val[0]]
                     } else {
                         result.val = [parent, result.val[0]]

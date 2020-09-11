@@ -37,7 +37,7 @@ class Widget {
 
 struct Constraint {
     var attr: ConstraintAttr
-    var to: ConstraintAttr
+    var toAttr: ConstraintAttr
     var val: [String]
     var relation: Relation
 }

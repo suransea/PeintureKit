@@ -214,8 +214,10 @@ class Analyzer {
             let value = prop.value
             let (first, second) = prop.name.twoComponents(separatedBy: "To")
             if let attr = ConstraintAttr(rawValue: first) {
-                let to = ConstraintAttr(rawValue: second.firstLetterLowercased) ?? .unspecific
-                result.append(Constraint(attr: attr, to: to, val: try value.asStringArray(), relation: prop.relation))
+                let toAttr = ConstraintAttr(rawValue: second.firstLetterLowercased) ?? .unspecific
+                result.append(
+                        Constraint(attr: attr, toAttr: toAttr, val: try value.asStringArray(), relation: prop.relation)
+                )
             }
         }
         return result
