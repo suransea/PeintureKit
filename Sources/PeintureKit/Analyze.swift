@@ -50,24 +50,32 @@ extension Rhs {
         return rhs.value
     }
 
-    func asStringArray() throws -> [String] {
+    func asArray() throws -> [Rhs] {
         if let array = self as? ArrayRhs {
-            return try array.items.map { rhs -> String in
-                try rhs.asString()
-            }
+            return array.items
         } else if let tuple = self as? TupleRhs {
-            return try tuple.items.map { rhs -> String in
-                try rhs.asString()
-            }
+            return tuple.items
         } else if let value = self as? ValueRhs {
-            return [value.value]
+            return [value]
         }
         throw AnalyzeError.mismatchedArgument("\(self)")
+    }
+
+    func asStringArray() throws -> [String] {
+        try self.asArray().map { rhs in
+            try rhs.asString()
+        }
     }
 
     func asStringTupleTwo() throws -> (String, String) {
         let array = try self.asStringArray()
         return (array[0], array[1])
+    }
+
+    func asStringTupleTwoArray() throws -> [(String, String)] {
+        try self.asArray().map { rhs in
+            try rhs.asStringTupleTwo()
+        }
     }
 
     func asBool() throws -> Bool {
@@ -103,8 +111,8 @@ class Analyzer {
     private let varDict: [String: Decl]
 
     init(vl: String) throws {
-        root = try Parser(src: vl).parse()
-        varDict = root.vars.reduce(into: [:]) { result, v in
+        self.root = try Parser(src: vl).parse()
+        self.varDict = root.vars.reduce(into: [:]) { result, v in
             result[v.name] = v.decl
         }
     }
@@ -121,7 +129,7 @@ class Analyzer {
         switch decl.type {
         case "Composite":
             result = try analyzeComposite(decl: decl)
-        case "Empty":
+        case "Empty", "View":
             result = Empty()
         case "Text":
             result = try analyzeText(decl: decl)
@@ -197,14 +205,28 @@ class Analyzer {
                 widget.color = try value.asString()
             case "contentMode":
                 widget.contentMode = try value.asString()
+            case "alpha":
+                widget.alpha = try value.asString()
+            case "shape":
+                widget.shape = try value.asString()
+            case "cornerRadii":
+                widget.cornerRadii = try value.asStringTupleTwo()
             case "cornerRadius":
-                widget.cornerRadius = try value.asString()
+                let radius = try value.asString()
+                widget.cornerRadii = (radius, radius)
+            case "corners":
+                widget.corners = try value.asStringArray()
+            case "borderWidth":
+                widget.borderWidth = try value.asString()
+            case "borderColor":
+                widget.borderColor = try value.asString()
             default:
                 break
             }
         }
         widget.constraints = try obtainConstraints(decl: decl)
         widget.transform = try obtainTransform(decl: decl)
+        widget.gradient = try obtainGradient(decl: decl)
     }
 
     private func obtainConstraints(decl: Decl) throws -> [Constraint] {
@@ -239,8 +261,27 @@ class Analyzer {
                 result.scale = try value.asStringTupleTwo()
             case "rotation":
                 result.rotation = try value.asString()
-            case "alpha":
-                result.alpha = try value.asString()
+            default:
+                break
+            }
+        }
+        return result
+    }
+
+    private func obtainGradient(decl: Decl) throws -> Gradient? {
+        guard let gradient = decl.decls.last(where: { $0.type == "Gradient" }) else {
+            return nil
+        }
+        var result = Gradient()
+        try gradient.props.forEach { prop in
+            let value = prop.value
+            switch prop.name {
+            case "colors":
+                result.colors = try value.asStringArray()
+            case "type":
+                result.type = try value.asString()
+            case "orientation":
+                result.orientation = try value.asStringTupleTwoArray()
             default:
                 break
             }

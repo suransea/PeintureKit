@@ -88,7 +88,14 @@ contentMode  // 'scaleToFill'
                 'topRight'
                 'bottomLeft'
                 'bottomRight'
+alpha        // float in [0, 1], 0 is transparent
+shape        // 'rectangle' or 'oval'
+borderColor  // ex: '#333333'
+borderWidth  // float
+cornerRadii  // ex: (100, 100)
 cornerRadius // float
+corners      // subset of ['topLeft', 'topRight', 'bottomRight', 'bottomLeft']
+gradient     // declaration
 ```
 
 #### Declaration
@@ -126,13 +133,20 @@ pivot        // ex: (0.5, 0.5)
 translation  // (x, y)
 scale        // (x, y)
 rotation     // angle
-alpha        // float in [0, 1], 0 is transparent
+```
+
+##### Gradient
+```
+colors      // array, at least 2 items
+type        // 'axial'
+               'radial'
+orientation // ex: [(0, 0), (1, 0)]
 ```
 
 ### Text
 ```
 text       // the main argument
-textSize   // ex: '16sp'
+textSize   // float
 textColor  // ex: '#333333'
 textStyle  // 'bold'
               'italic'

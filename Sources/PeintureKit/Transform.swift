@@ -28,6 +28,8 @@ extension Widget {
         var views = [(Widget, UIView)]()
         let view = try transformWidgetIntoView(widget: self, drawer: drawer, views: &views)
         makeConstraints(for: views)
+        view.layoutIfNeeded()
+        setupAfterLayout(for: views)
         return view
     }
 }
@@ -56,17 +58,13 @@ func transformWidgetIntoView(widget: Widget, drawer: Drawer, views: inout [(Widg
     result.tag = Int(widget.id) ?? 0
     result.translatesAutoresizingMaskIntoConstraints = false
     result.contentMode = UIView.ContentMode(str: widget.contentMode)
+    result.alpha = CGFloat(str: widget.alpha)
     if !widget.color.isEmpty {
         result.backgroundColor = UIColor(str: widget.color)
-    }
-    if !widget.cornerRadius.isEmpty {
-        result.layer.cornerRadius = CGFloat(str: widget.cornerRadius)
-        result.clipsToBounds = true
     }
     if let some = widget.transform {
         result.layer.anchorPoint = CGPoint(x: CGFloat(str: some.pivot.0), y: CGFloat(str: some.pivot.1))
         result.transform.apply(transform: some)
-        result.alpha = CGFloat(str: some.alpha)
     }
     return result
 }
@@ -102,9 +100,127 @@ func transformText(text: Text) -> UITextView {
     return result
 }
 
+func setupAfterLayout(for views: [(Widget, UIView)]) {
+    views.forEach { widget, view in
+        let path: UIBezierPath
+        switch widget.shape {
+        case "oval":
+            path = UIBezierPath(ovalIn: view.bounds)
+        default:
+            path = UIBezierPath(roundedRect: view.bounds, byRoundingCorners: UIRectCorner(corners: widget.corners),
+                    cornerRadii: CGSize(tuple: widget.cornerRadii))
+        }
+        let shape = CAShapeLayer()
+        shape.path = path.cgPath
+        view.layer.mask = shape
+        view.layer.masksToBounds = true
+        if !widget.borderColor.isEmpty {
+            let border = CAShapeLayer()
+            border.path = path.cgPath
+            border.strokeColor = UIColor(str: widget.borderColor).cgColor
+            border.lineWidth = CGFloat(str: widget.borderWidth)
+            border.fillColor = UIColor.clear.cgColor
+            view.layer.addSublayer(border)
+        }
+
+        if let some = widget.gradient {
+            let gradient = CAGradientLayer()
+            gradient.frame = view.bounds
+            gradient.type = some.type.isEmpty ? .axial : CAGradientLayerType(rawValue: some.type)
+            gradient.colors = some.colors.map { color in
+                UIColor(str: color).cgColor
+            }
+            gradient.startPoint = CGPoint(tuple: some.orientation[0])
+            gradient.endPoint = CGPoint(tuple: some.orientation[1])
+            view.layer.addSublayer(gradient)
+        }
+    }
+}
+
+func makeConstraints(for views: [(Widget, UIView)]) {
+    views.filter { widget, _ in
+        !widget.constraints.isEmpty
+    }.forEach { widget, view in
+        let constraints = widget.constraints.map { constraint in
+            constraint.standardised
+        }
+        linkConstraints(constraints, to: view, root: views.last!.1)
+    }
+}
+
+func linkConstraints(_ constraints: [Constraint], to item: UIView, root: UIView) {
+    constraints.forEach { constraint in
+        let superview = item.superview
+        let toItem: UIView?, target: UIView?
+        let toId = constraint.val[0]
+        if toId == parent {
+            (toItem, target) = (superview, superview)
+        } else {
+            let id = Int(toId) ?? -1
+            if id != -1 {
+                toItem = root.viewWithTag(id)
+                if toItem == nil {
+                    return  // ignore this constraint if toItem invalid
+                }
+                target = findCommonSuperview(item, toItem!)
+            } else {
+                (toItem, target) = (nil, item)
+            }
+        }
+
+        if target == nil {
+            return
+        }
+
+        let attr = NSLayoutConstraint.Attribute(attr: constraint.attr)
+        let toAttr = NSLayoutConstraint.Attribute(attr: constraint.toAttr)
+        let relation = NSLayoutConstraint.Relation(relation: constraint.relation)
+        let const = CGFloat(str: constraint.val[1])
+        let multiplier = CGFloat(str: constraint.val[2])
+        target!.addConstraint(NSLayoutConstraint(item: item, attribute: attr,
+                relatedBy: relation, toItem: toItem, attribute: toAttr,
+                multiplier: multiplier, constant: const))
+    }
+}
+
+func findCommonSuperview(_ a: UIView, _ b: UIView) -> UIView? {
+    var visited = Set<UIView>()
+    var (x, y) = (Optional.some(a), Optional.some(b))
+    while true {
+        if let some = x {
+            if !visited.insert(some).inserted {
+                return some
+            }
+        }
+        if let some = y {
+            if !visited.insert(some).inserted {
+                return some
+            }
+        }
+        x = x?.superview
+        y = y?.superview
+
+        if x == nil && y == nil {
+            return nil
+        }
+    }
+}
+
 extension CGFloat {
     init(str: String) {
         self.init(Float(str) ?? 0)
+    }
+}
+
+extension CGSize {
+    init(tuple: (String, String)) {
+        self.init(width: CGFloat(str: tuple.0), height: CGFloat(str: tuple.1))
+    }
+}
+
+extension CGPoint {
+    init(tuple: (String, String)) {
+        self.init(x: CGFloat(str: tuple.0), y: CGFloat(str: tuple.1))
     }
 }
 
@@ -196,78 +312,37 @@ extension UIFont.Weight {
 
 extension CGAffineTransform {
     mutating func apply(transform: Transform) {
-        self = self.rotated(by: CGFloat(Float.pi) * CGFloat(str: transform.rotation) / 180)
-                .scaledBy(x: CGFloat(str: transform.scale.0), y: CGFloat(str: transform.scale.1))
-                .translatedBy(x: CGFloat(str: transform.translation.0), y: CGFloat(str: transform.translation.1))
+        let rotation = CGFloat(Float.pi) * CGFloat(str: transform.rotation) / 180
+        let (scaleX, scaleY) = transform.scale
+        let (translationX, translationY) = transform.translation
+        self = self.rotated(by: rotation)
+                .scaledBy(x: CGFloat(str: scaleX), y: CGFloat(str: scaleY))
+                .translatedBy(x: CGFloat(str: translationX), y: CGFloat(str: translationY))
     }
 }
 
-func makeConstraints(for views: [(Widget, UIView)]) {
-    views.filter { widget, _ in
-        !widget.constraints.isEmpty
-    }.forEach { widget, view in
-        let constraints = widget.constraints.map { constraint in
-            constraint.standardised
-        }
-        linkConstraints(constraints, to: view, root: views.last!.1)
-    }
-}
-
-func linkConstraints(_ constraints: [Constraint], to item: UIView, root: UIView) {
-    constraints.forEach { constraint in
-        let superview = item.superview
-        let toItem: UIView?, target: UIView?
-        let toId = constraint.val[0]
-        if toId == parent {
-            (toItem, target) = (superview, superview)
-        } else {
-            let id = Int(toId) ?? -1
-            if id != -1 {
-                toItem = root.viewWithTag(id)
-                if toItem == nil {
-                    return  // ignore this constraint if toItem invalid
-                }
-                target = findCommonSuperview(item, toItem!)
-            } else {
-                (toItem, target) = (nil, item)
-            }
-        }
-
-        if target == nil {
+extension UIRectCorner {
+    init(corners: [String]) {
+        if corners.isEmpty {
+            self.init(rawValue: UIRectCorner.allCorners.rawValue)
             return
         }
-
-        let attr = NSLayoutConstraint.Attribute(attr: constraint.attr)
-        let toAttr = NSLayoutConstraint.Attribute(attr: constraint.toAttr)
-        let relation = NSLayoutConstraint.Relation(relation: constraint.relation)
-        let const = CGFloat(str: constraint.val[1])
-        let multiplier = CGFloat(str: constraint.val[2])
-        target!.addConstraint(NSLayoutConstraint(item: item, attribute: attr,
-                relatedBy: relation, toItem: toItem, attribute: toAttr,
-                multiplier: multiplier, constant: const))
-    }
-}
-
-func findCommonSuperview(_ a: UIView, _ b: UIView) -> UIView? {
-    var visited = Set<UIView>()
-    var (x, y) = (Optional.some(a), Optional.some(b))
-    while true {
-        if let some = x {
-            if !visited.insert(some).inserted {
-                return some
+        var rawCorners: UInt = 0
+        corners.forEach { corner in
+            switch corner {
+            case "topLeft":
+                rawCorners |= UIRectCorner.topLeft.rawValue
+            case "topRight":
+                rawCorners |= UIRectCorner.topRight.rawValue
+            case "bottomRight":
+                rawCorners |= UIRectCorner.bottomRight.rawValue
+            case "bottomLeft":
+                rawCorners |= UIRectCorner.bottomLeft.rawValue
+            default:
+                break
             }
         }
-        if let some = y {
-            if !visited.insert(some).inserted {
-                return some
-            }
-        }
-        x = x?.superview
-        y = y?.superview
-
-        if x == nil && y == nil {
-            return nil
-        }
+        self.init(rawValue: rawCorners)
     }
 }
 

@@ -32,7 +32,13 @@ class Widget {
     var contentMode = empty
     var constraints = [Constraint]()
     var transform: Transform?
-    var cornerRadius = empty
+    var alpha = "1"
+    var shape = empty
+    var cornerRadii = (zero, zero)
+    var corners = [String]()
+    var borderWidth = zero
+    var borderColor = empty
+    var gradient: Gradient?
 }
 
 struct Constraint {
@@ -54,7 +60,12 @@ struct Transform {
     var rotation = zero
     var scale = ("1", "1")
     var translation = (zero, zero)
-    var alpha = "1"
+}
+
+struct Gradient {
+    var colors = [String]()
+    var type = empty
+    var orientation = [(zero, zero), ("1", zero)]
 }
 
 class Empty: Widget {
