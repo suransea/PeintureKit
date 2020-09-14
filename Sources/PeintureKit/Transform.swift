@@ -184,26 +184,12 @@ func linkConstraints(_ constraints: [Constraint], to item: UIView, root: UIView)
 }
 
 func findCommonSuperview(_ a: UIView, _ b: UIView) -> UIView? {
-    var visited = Set<UIView>()
-    var (x, y) = (Optional.some(a), Optional.some(b))
-    while true {
-        if let some = x {
-            if !visited.insert(some).inserted {
-                return some
-            }
-        }
-        if let some = y {
-            if !visited.insert(some).inserted {
-                return some
-            }
-        }
-        x = x?.superview
-        y = y?.superview
-
-        if x == nil && y == nil {
-            return nil
-        }
+    var (x, y) = (a, b)
+    while x != y {
+        x = x.superview ?? b
+        y = y.superview ?? a
     }
+    return x
 }
 
 extension CGFloat {
