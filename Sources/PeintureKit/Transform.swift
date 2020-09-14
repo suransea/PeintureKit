@@ -183,7 +183,7 @@ func linkConstraints(_ constraints: [Constraint], to item: UIView, root: UIView)
     }
 }
 
-func findCommonSuperview(_ a: UIView, _ b: UIView) -> UIView? {
+func findCommonSuperview(_ a: UIView, _ b: UIView) -> UIView {
     var (x, y) = (a, b)
     while x != y {
         x = x.superview ?? b
