@@ -12,21 +12,21 @@ let Custom = Composite {
     Text('Hello') {
         id = 1
         color = '#00FFFFFF'
-        textSize = 180
+        textSize = 120
         textColor = '#333333'
         Constraint {
             centerX = 'parent'
-            top = 100
+            top = 60
         }
     }
     Image {
         id = 2
-        src = 'https://w.wallhaven.cc/full/6k/wallhaven-6k3oox.jpg'
         contentMode = 'scaleAspectFit'
+        src = 'https://w.wallhaven.cc/full/6k/wallhaven-6k3oox.jpg'
         Constraint {
             width = 'parent'
             heightToWidth = (2, 0, 0.5625)
-            topToBottom = (1, 100)
+            topToBottom = (1, 60)
         }
     }
 }
@@ -37,7 +37,7 @@ let Custom = Composite {
 Custom {
     color = '#F6F6F6'
     Constraint {
-        width = 1200
+        width = 800
         bottomToBottom = 2
     }
 }
@@ -65,7 +65,7 @@ You can also customize the image loader.
 
 The result:
 
-![example](https://i.loli.net/2020/09/11/PuRYEIS8xZzrFbg.png)
+![example](https://i.loli.net/2020/09/14/x97eYTODVuormBL.png)
 
 ## Widgets
 
@@ -169,7 +169,7 @@ underLine  // boolean
 src        // image url, also as the main argument
 ```
 
-### Empty
+### View, Empty
 No specific arguments.
 
 ## License

@@ -45,11 +45,11 @@ let testVl = """
                  Text('Hello') {
                      id = 1
                      color = '#00FFFFFF'
-                     textSize = 180
+                     textSize = 120
                      textColor = '#333333'
                      Constraint {
                          centerX = 'parent'
-                         top = 100
+                         top = 60
                      }
                  }
                  Image {
@@ -59,7 +59,7 @@ let testVl = """
                      Constraint {
                          width = 'parent'
                          heightToWidth = (2, 0, 0.5625)
-                         topToBottom = (1, 100)
+                         topToBottom = (1, 60)
                      }
                  }
              }
@@ -70,7 +70,7 @@ let testVl = """
              Custom {
                  color = '#F6F6F6'
                  Constraint {
-                     width = 1200
+                     width = 800
                      bottomToBottom = 2
                  }
              }
