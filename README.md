@@ -1,5 +1,9 @@
 # PeintureKit
 
+[![](https://img.shields.io/cocoapods/v/PeintureKit?color=9cf&style=flat-square)](https://cocoapods.org/pods/PeintureKit)
+[![](https://img.shields.io/cocoapods/l/PeintureKit?style=flat-square)](https://www.mit-license.org)
+![](https://img.shields.io/cocoapods/p/PeintureKit?style=flat-square)
+
 A DSL drawing toolkit.
 
 ## Example
