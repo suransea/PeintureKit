@@ -11,3 +11,9 @@ xcuserdata/
 
 # Pods
 /Pods
+
+# bazel
+bazel-bin
+bazel-out
+bazel-testlogs
+bazel-PeintureKit
